@@ -5,7 +5,7 @@
     
 </style>
 <script>
-const createDice = (x, y, scene, duration = 1000) => {
+const createDice = (x, y, scene, duration = 3000) => {
 
 let diceIsRolling = false;
 
@@ -103,51 +103,127 @@ return (callback) => {
         preload() {
             this.load.image("dice-albedo", "assets/dice-albedo.png");
             this.load.obj("dice-obj", "assets/dice.obj");
+            this.load.image("pin", 'assets/pin.png');
+            this.load.image("tile", 'assets/tile.png');
         }
 
         create() {
-            const dice = createDice(this.scale.width / 2, this.scale.height / 2, this, 1000);
+            const tiles = {
+                1:{
+                    x:100,
+                    y:200,
+                },
+                2:{
+                    x:220,
+                    y:200,
+                },
+                3:{
+                    x:340,
+                    y:200,
+                },
+                4:{
+                    x:460,
+                    y:200,
+                },
+                5:{
+                    x:580,
+                    y:200,
+                },
+                6:{
+                    x:700,
+                    y:200,
+                },
+                7:{
+                    x:820,
+                    y:200,
+                },
+            }
 
-        // Text object to show the dice value
-        const textDiceValue = this.add.text(this.scale.width / 2, this.scale.height / 2, '0', { fontFamily: 'Arial Black', fontSize: 74, color: '#c51b7d' });
-        textDiceValue.setStroke('#de77ae', 16)
-            .setScale(0);
+            let tileObj = {}
 
-        this.input.keyboard.on('keydown-ENTER', () => {
-            dice((diceValue) => {
-                console.log('Dice value ', diceValue);
+            const index = {
+                1:{
+                    x:0.75,
+                    y:0.75,
+                },
+                2:{
+                    x:0.25,
+                    y:0.75,
+                },
+                3:{
+                    x:0.75,
+                    y:0.25,
+                },
+                4:{
+                    x:0.25,
+                    y:0.25,
+                },
+                5:{
+                    x:0.5,
+                    y:0.25,
+                },
+            }
+            let player = {
+                1:2, 
+                2:1, 
+                3:1,
+                4:2,
+                5:2,
+            } 
 
-                // Show the dice value
-                textDiceValue.text = diceValue;
-                textDiceValue.setOrigin(0.5);
-                textDiceValue.setPosition(this.scale.width / 2, this.scale.height / 2);
+            // 自分より小さいキーの数字で勝つ同じマスに止まっているプレイヤー数 + 1
+            let getIndex = function(playerNo) {
+                var ind = 1;
+                for(let i = 1;i < playerNo;i++) {
+                    if(player[i] == player[playerNo]) {
+                        ind++
+                    } else {
+                        continue;
+                    }
+                }
+                return ind;
+    }
+            for(let i = 1; i < 8;i++) {
+               tileObj[i] = this.add.image(tiles[i]['x'], tiles[i]['y'], 'tile').setOrigin(.5, .3).setScale(0.33, 0.33);
+            }
+            let pin1 = this.add.image(tileObj[player[1]].x, tileObj[player[1]].y, 'pin').setOrigin(index[getIndex(1)]['x'],index[getIndex(1)]['y'] ).setScale(0.25, 0.25);
+            let pin2 = this.add.image(tileObj[player[2]].x, tileObj[player[2]].y, 'pin').setOrigin(index[getIndex(2)]['x'],index[getIndex(2)]['y'] ).setScale(0.25, 0.25);
+            let pin3 = this.add.image(tileObj[player[3]].x, tileObj[player[3]].y, 'pin').setOrigin(index[getIndex(3)]['x'],index[getIndex(3)]['y'] ).setScale(0.25, 0.25);
+            let pin4 = this.add.image(tileObj[player[4]].x, tileObj[player[4]].y, 'pin').setOrigin(index[getIndex(4)]['x'],index[getIndex(4)]['y'] ).setScale(0.25, 0.25);
+            let pin5 = this.add.image(tileObj[player[5]].x, tileObj[player[5]].y, 'pin').setOrigin(index[getIndex(5)]['x'],index[getIndex(5)]['y'] ).setScale(0.25, 0.25);
 
-                // this.add.tween({
-                //     targets: textDiceValue,
-                //     scale: 1,
-                //     duration: 1000,
-                //     ease: Phaser.Math.Easing.Bounce.Out,
-                //     onComplete: () => {
-                //         this.add.tween({
-                //             targets: [textDiceValue],
-                //             scale: 0,
-                //             delay: 1000,
-                //             duration: 1000,
-                //             ease: Phaser.Math.Easing.Bounce.Out,
-                //         });
-                //     }
-                // });
-            });
-        });
+            
+            
+        //     const dice1 = createDice(300, 300, this, 1000);
+        //     const dice2 = createDice(900, 300, this, 1300);
+        //     const dice3 = createDice(1500, 300, this, 1600);
 
-        // Text information. Is not important
-        const rect = this.add.rectangle(0, this.scale.height - 50, this.scale.width, 50, 0x000000, 1)
-            .setAlpha(.9)
-            .setOrigin(0);
-        this.add.text(rect.getCenter().x, rect.getCenter().y, 'Click to roll dice', {
-            font: '20px Courier',
-            fill: '#00ff00',
-        }).setOrigin(0.5);
+        // // Text object to show the dice value
+        // const textDiceValue = this.add.text(this.scale.width / 2, this.scale.height / 2, '0', { fontFamily: 'Arial Black', fontSize: 74, color: '#c51b7d' });
+        // textDiceValue.setStroke('#de77ae', 16)
+        //     .setScale(0);
+
+        // this.sum = 0;
+
+
+        // this.diceroll = this.input.keyboard.on('keydown-ENTER', () => {
+        //     this.sum = 0;
+        //     dice1((diceValue) => {
+        //         this.sum += diceValue;
+        //     });
+        //     dice2((diceValue) => {
+        //         this.sum += diceValue;
+        //     });
+        //     dice3((diceValue) => {
+        //         this.sum += diceValue;
+        //     });
+        // });
+        // this.sumValue = this.add.text(960, 700, this.sum, {fontSize:120, fontFamily:'Bold Italic', stroke:'#fff', strokeThickness:3, fill:'#fff'}).setOrigin(0.5, 0.5);
+
+        }
+
+        update() {
+            // this.sumValue.setText(this.sum);
         }
     }
 
@@ -156,8 +232,8 @@ return (callback) => {
 
     let config = {
         type:Phaser.AUTO,
-        width:800,
-        height:600,
+        width:1920,
+        height:1080,
         scene:[
             Main,
         ],
